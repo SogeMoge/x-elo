@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 # 1
 from discord.ext import commands
+from discord.utils import get
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -20,6 +21,15 @@ async def mew(ctx):
 
     response = random.choice(mew_sound)
     await ctx.send(response)
+
+@bot.command(name='reg', help=' - apply league role to a user')
+@commands.has_role('league admin')
+async def addrole(ctx):
+    member = ctx.message.author
+    role = get(member.guild.roles, name="league")
+    await discord.Member.add_roles(member, role)
+
+
 
 @bot.event
 async def on_ready():
