@@ -5,30 +5,25 @@ import random
 import discord
 from dotenv import load_dotenv
 
+# 1
+from discord.ext import commands
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
+# 2
+bot = commands.Bot(command_prefix='%')
 
-client = discord.Client()
+@bot.command(name='полом', help=' - Мяукнет в ответ')
+async def mew(ctx):
+    mew_sound = ['Кошечка говорит мяу']
 
-@client.event
+    response = random.choice(mew_sound)
+    await ctx.send(response)
+
+@bot.event
 async def on_ready():
-    print(f'{client.user.name} is connected to the Discord!')
+    print(f'{bot.user.name} has connected to Discord!')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    mew = [
-        'МЯУ',
-        'МЯ',
-        'МЯЯУУ'
-    ]
-
-    if message.content == 'полом':
-        response = random.choice(mew)
-        await message.channel.send(response)
-
-client.run(TOKEN)
+bot.run(TOKEN)
 # %%
