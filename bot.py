@@ -32,16 +32,21 @@ async def giverole(ctx, member: discord.Member):
         else:
             conn = sqlite3.connect(os.getenv('DB')) # open database connection
             cursor = conn.cursor()
-            sql = "INSERT INTO rating (user_id, user_name) VALUES (?, ?)"
-            id = member.id
-            name = member.name
-            cursor.execute(sql, [id, name])
+            sql = "INSERT INTO rating (member_id, member_name) VALUES (?, ?)"
+            member_id = member.id
+            member_name = member.name
+            cursor.execute(sql, [member_id, member_name])
             conn.commit()
             conn.close()  # close database connection
             await member.add_roles(role) # add league role
             await ctx.send(f"{member.name} has been registered in league")
     except: # simple error handler if bot tries to insert duplicated value
         await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
+
+@bot.command(name='status', help=' - check your personal rating')
+@commands.has_role('league')
+async def status(ctx):
+    user = ctx.message.author
 
 @bot.event
 async def on_ready():
