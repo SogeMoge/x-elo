@@ -1,6 +1,7 @@
 # bot.py
 import os
 import random
+import sqlite3
 
 import discord
 from dotenv import load_dotenv
@@ -12,6 +13,13 @@ from discord.utils import get
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
+# DB connect
+# conn = sqlite3.connect(os.getenv('DB'))
+# cursor = conn.cursor()
+# close database connection
+# conn.commit()
+# conn.close()
+
 # 2
 bot = commands.Bot(command_prefix='%')
 
@@ -22,15 +30,27 @@ bot = commands.Bot(command_prefix='%')
 #     response = random.choice(mew_sound)
 #     await ctx.send(response)
 
+
 @bot.command(name='reg', help=' - apply league role to a user')
 @commands.has_role('league admin')
 async def giverole(ctx, member: discord.Member):
-    role = get(ctx.guild.roles, name="league") # role you want to add to a user
-    if role in member.roles:                   # checks if user has such role
-        await member.remove_roles(role)        #removes the role
-    else:
-        await member.add_roles(role)
-        await ctx.send(f"{member.name} has been registered in league")
+    try:
+        role = get(ctx.guild.roles, name="league") # role you want to add to a user
+        if role in member.roles:                   # checks if user has such role
+            await ctx.send(f"{member.name} has league role already")
+        else:
+            conn = sqlite3.connect(os.getenv('DB')) # open database connection
+            cursor = conn.cursor()
+            sql = "INSERT INTO rating (user_id, user_name) VALUES (?, ?)"
+            id = member.id
+            name = member.name
+            cursor.execute(sql, [id, name])
+            conn.commit()
+            conn.close() 
+            await member.add_roles(role)
+            await ctx.send(f"{member.name} has been registered in league")
+    except:
+        await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
 
 @bot.event
 async def on_ready():
