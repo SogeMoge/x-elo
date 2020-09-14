@@ -6,21 +6,12 @@ import sqlite3
 import discord
 from dotenv import load_dotenv
 
-# 1
 from discord.ext import commands
 from discord.utils import get
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-# DB connect
-# conn = sqlite3.connect(os.getenv('DB'))
-# cursor = conn.cursor()
-# close database connection
-# conn.commit()
-# conn.close()
-
-# 2
 bot = commands.Bot(command_prefix='%')
 
 # @bot.command(name='полом', help=' - Мяукнет в ответ')
@@ -46,10 +37,10 @@ async def giverole(ctx, member: discord.Member):
             name = member.name
             cursor.execute(sql, [id, name])
             conn.commit()
-            conn.close() 
-            await member.add_roles(role)
+            conn.close()  # close database connection
+            await member.add_roles(role) # add league role
             await ctx.send(f"{member.name} has been registered in league")
-    except:
+    except: # simple error handler if bot tries to insert duplicated value
         await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
 
 @bot.event
