@@ -28,7 +28,7 @@ cursor = conn.cursor()
 @bot.command(name='reg', help=' - apply league role to a user')
 @commands.has_role('league admin')
 async def giverole(ctx, member: discord.Member):
-    # try:
+     try:
         role = get(ctx.guild.roles, name="league") # role you want to add to a user
         if role in member.roles:                   # checks if user has such role
             await ctx.send(f"{member.name} has league role already")
@@ -37,15 +37,19 @@ async def giverole(ctx, member: discord.Member):
             conn.commit()
             await member.add_roles(role) # add league role
             await ctx.send(f"{member.name} has been registered in league")
-    # except: # simple error handler if bot tries to insert duplicated value
-        # await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
+     except: # simple error handler if bot tries to insert duplicated value
+         await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
 
 @bot.command(name='status', help=' - check your personal rating')
 @commands.has_role('league')
 async def status(ctx):
-    cursor.execute(f'SELECT rating,games,wins,ties,losses FROM rating WHERE member_id={ctx.author.id}')
-    data = cursor.fetchall()
-    await ctx.send(f"{data}")
+    # cursor.execute(f'SELECT rating,games,wins,ties,losses FROM rating WHERE member_id={ctx.author.id}')
+    # data = cursor.fetchall()
+    # await ctx.send(f"{data}")
+    table=[["rating","games","wins","ties","losses"]]
+    for row in cursor.execute(f'SELECT rating,games,wins,ties,losses FROM rating WHERE member_id={ctx.author.id}'):
+        table.append([row[0],row[1],row[2],row[3],row[4]])
+        await ctx.send(f">\n{tabulate(table)}")
 
 @bot.event
 async def on_ready():
