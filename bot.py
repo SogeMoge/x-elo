@@ -51,6 +51,12 @@ async def status(ctx):
         embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
+@bot.command(name='game', help='submint game results in form of "@winner win @looser loss"')
+@commands.has_role('league')
+async def results(ctx, member: discord.Member):
+            await bot.send_message()
+
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
