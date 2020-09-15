@@ -28,17 +28,17 @@ cursor = conn.cursor()
 @bot.command(name='reg', help=' - apply league role to a user')
 @commands.has_role('league admin')
 async def giverole(ctx, member: discord.Member):
-    try:
+    # try:
         role = get(ctx.guild.roles, name="league") # role you want to add to a user
         if role in member.roles:                   # checks if user has such role
             await ctx.send(f"{member.name} has league role already")
         else:
-            cursor.execute("INSERT INTO rating (member_id, member_name) VALUES ({member.id}, {member.name})")
+            cursor.execute(f"INSERT INTO rating (member_id, member_name) VALUES ({member.id}, '{member.name}')")
             conn.commit()
             await member.add_roles(role) # add league role
             await ctx.send(f"{member.name} has been registered in league")
-    except: # simple error handler if bot tries to insert duplicated value
-        await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
+    # except: # simple error handler if bot tries to insert duplicated value
+        # await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
 
 @bot.command(name='status', help=' - check your personal rating')
 @commands.has_role('league')
