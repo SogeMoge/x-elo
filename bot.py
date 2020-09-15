@@ -35,7 +35,10 @@ async def giverole(ctx, member: discord.Member):
             cursor.execute(f"INSERT INTO rating (member_id, member_name) VALUES ({member.id}, '{member.name}')")
             conn.commit()
             await member.add_roles(role) # add league role
-            await ctx.send(f"{member.name} has been registered in league")
+            embed = discord.Embed(title="Registration successful\nWelcome to the league!", colour=discord.Colour(0x6790a7))
+            embed.set_footer(text=member.name, icon_url = member.avatar_url)
+            await ctx.send(embed=embed)
+            # await ctx.send(f"{member.name} has been registered in league")
      except: # simple error handler if bot tries to insert duplicated value
          await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
 
@@ -51,10 +54,13 @@ async def status(ctx):
         embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
-@bot.command(name='game', help='submint game results in form of "@winner win @looser loss"')
+@bot.command(name='game', help='submit results like @opponent and his result "@opponent win/loss"')
 @commands.has_role('league')
-async def results(ctx, member: discord.Member):
-            await bot.send_message()
+async def results(ctx, member: discord.Member, result, points):
+    if result in 'win':
+        await ctx.send(f"{member.name} won with {points}!")
+    else:
+        await ctx.send(f'{ctx.author.name} won with {points}!')      
 
 
 @bot.event
