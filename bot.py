@@ -49,7 +49,7 @@ async def status(ctx):
     table=[["rating","games","wins","ties","losses"]]
     for row in cursor.execute(f'SELECT rating,games,wins,ties,losses FROM rating WHERE member_id={ctx.author.id}'):
         table.append([row[0],row[1],row[2],row[3],row[4]])
-        await ctx.send(f">\n{tabulate(table)}")
+        await ctx.send(f">{ctx.author.name}\n{tabulate(table)}")
 
 @bot.event
 async def on_ready():
