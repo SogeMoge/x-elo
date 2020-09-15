@@ -1,18 +1,21 @@
 # bot.py
 import os
 import random
-import sqlite3
-
 import discord
 from dotenv import load_dotenv
-
 from discord.ext import commands
 from discord.utils import get
+from tabulate import tabulate
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='%')
+
+import sqlite3
+conn = sqlite3.connect(os.getenv('DB')) # open database connection
+cursor = conn.cursor()
+# conn.close()  # close database connection
 
 # @bot.command(name='полом', help=' - Мяукнет в ответ')
 # async def mew(ctx):
@@ -30,14 +33,8 @@ async def giverole(ctx, member: discord.Member):
         if role in member.roles:                   # checks if user has such role
             await ctx.send(f"{member.name} has league role already")
         else:
-            conn = sqlite3.connect(os.getenv('DB')) # open database connection
-            cursor = conn.cursor()
-            sql = "INSERT INTO rating (member_id, member_name) VALUES (?, ?)"
-            member_id = member.id
-            member_name = member.name
-            cursor.execute(sql, [member_id, member_name])
+            cursor.execute("INSERT INTO rating (member_id, member_name) VALUES ({member.id}, {member.name})")
             conn.commit()
-            conn.close()  # close database connection
             await member.add_roles(role) # add league role
             await ctx.send(f"{member.name} has been registered in league")
     except: # simple error handler if bot tries to insert duplicated value
@@ -46,7 +43,9 @@ async def giverole(ctx, member: discord.Member):
 @bot.command(name='status', help=' - check your personal rating')
 @commands.has_role('league')
 async def status(ctx):
-    user = ctx.message.author
+    cursor.execute(f'SELECT rating,games,wins,ties,losses FROM rating WHERE member_id={ctx.author.id}')
+    data = cursor.fetchall()
+    await ctx.send(f"{data}")
 
 @bot.event
 async def on_ready():
