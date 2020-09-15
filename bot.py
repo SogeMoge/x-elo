@@ -5,7 +5,6 @@ import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord.utils import get
-from tabulate import tabulate
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -43,24 +42,15 @@ async def giverole(ctx, member: discord.Member):
 @bot.command(name='status', help=' - check your personal rating')
 @commands.has_role('league')
 async def status(ctx):
-    # cursor.execute(f'SELECT rating,games,wins,ties,losses FROM rating WHERE member_id={ctx.author.id}')
-    # data = cursor.fetchall()
-    # await ctx.send(f"{data}")
-    table=[["rating","games","wins","ties","losses"]]
     for row in cursor.execute(f'SELECT rating,games,wins,ties,losses FROM rating WHERE member_id={ctx.author.id}'):
-        # table.append([row[0],row[1],row[2],row[3],row[4]])
         embed = discord.Embed(title="League profile", colour=discord.Colour(0x6790a7))
         embed.add_field(name="Rating", value=row[0], inline=True)
         embed.add_field(name="Games", value=row[1], inline=True)
-
         embed.add_field(name="Wins", value=row[2], inline=False)
         embed.add_field(name="Ties", value=row[3], inline=True)
         embed.add_field(name="Losses", value=row[4], inline=True)
-
         embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
-
         await ctx.send(embed=embed)
-        # await ctx.send(f">{ctx.author.name}\n{tabulate(table, tablefmt='pipe', stralign='center')}")
 
 @bot.event
 async def on_ready():
