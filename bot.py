@@ -24,7 +24,7 @@ cursor = conn.cursor()
 #     await ctx.send(response)
 
 
-@bot.command(name='reg', help=' - apply league role to a user')
+@bot.command(name='register', help=' - apply league role to a user', aliases=['reg'])
 @commands.has_role('league admin')
 async def giverole(ctx, member: discord.Member):
      try:
@@ -39,7 +39,7 @@ async def giverole(ctx, member: discord.Member):
      except: # simple error handler if bot tries to insert duplicated value
          await ctx.send(f"It seems that {member.name} has rating assigned already but has no league role")
 
-@bot.command(name='status', help=' - check your personal rating')
+@bot.command(name='status', help=' - check your personal rating', aliases=['stat'])
 @commands.has_role('league')
 async def status(ctx):
     for row in cursor.execute(f'SELECT rating,games,wins,losses FROM rating WHERE member_id={ctx.author.id}'):
