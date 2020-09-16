@@ -57,17 +57,17 @@ async def status(ctx):
 @bot.command(name='game', help='submit results like @opponent and his result "@opponent win/loss"')
 @commands.has_role('league')
 async def results(ctx, member: discord.Member, result, points):
-    pt = {points}
+    pt = points
     if result in 'win':
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(1, {ctx.author.id},{member.id},"loss","{pt}")')
+        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(3, {ctx.author.id},{member.id},"loss","{pt}")')
         conn.commit()
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(1,{member.id},{ctx.author.id},"win","{pt}")')
+        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(3,{member.id},{ctx.author.id},"win","{pt}")')
         conn.commit()
         await ctx.send(f"{member.name} won with {points}!")
     else:
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(1,{ctx.author.id},{member.id},"loss","{pt}")')
+        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(3,{ctx.author.id},{member.id},"loss","{pt}")')
         conn.commit()
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(1,{member.id},{ctx.author.id},"win","{pt}")')
+        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(3,{member.id},{ctx.author.id},"win","{pt}")')
         conn.commit()
         await ctx.send(f'{ctx.author.name} won with {points}!')
 
