@@ -87,7 +87,7 @@ async def list(ctx):
         await ctx.send(embed=embed)
 
 # command for entering game results, calculaton and updating rating
-@bot.command(name='game', help='submit results like @opponent and his result "@opponent win/loss points"')
+@bot.command(name='game', help=' - submit opponent\'s result "@opponent win/loss points"')
 @commands.has_role('league')
 async def results(ctx, member: discord.Member, result, points):
     pt = points
