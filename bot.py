@@ -77,7 +77,7 @@ async def game_check(ctx, member: discord.Member):
     await ctx.send(embed=embed)
 
 # Command shows League Leaderboard from top to bottom
-@bot.command(name='top', help=' - show leaderbord', aliases=['leaderboard'])
+@bot.command(name='top', help=' - show full league leaderbord', aliases=['leaderboard'])
 @commands.has_role('league')
 async def top(ctx):
     embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0x6790a7))
@@ -92,7 +92,7 @@ async def top(ctx):
     await ctx.send(embed=embed)
 
 # Command shows top10 from League Leaderboard
-@bot.command(name='top10', help=' - show leaderbord', aliases=['10'])
+@bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
 @commands.has_role('league')
 async def top10(ctx):
     embed = discord.Embed(title="Top 10 League players", colour=discord.Colour(0x6790a7))
