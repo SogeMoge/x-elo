@@ -83,97 +83,108 @@ async def results(ctx, member: discord.Member, result, points):
     K = 32        # K-factor
 
     #check if players have >= 10 games with each other
+    cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
+    gcount = cursor.fetchone()[0]
 
-    # extract current rating for message author
-    for a_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
-        Ra = a_row[0] # current author rating
-
-    # extract current rating for mentioned opponent
-    for op_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
-        Rop = op_row[0] # current opponent rating
- 
-    # Update rating as if mentioned opponent won the game
-    if result in 'win':
-        # calculating ELO
-        ## gathered delta points from current game
-        Ea = round( 1 / ( 1 + 10 ** ((Rop - Ra) / 400)), 2) # delta for author
-        Eop = round( 1 / ( 1 + 10 ** ((Ra - Rop) / 400)), 2) # delta for opponent
-
-        ## update rating
-        Rna = round( Ra + K * (0 - Ea), 2) # Calculate new Ra as Rna, 0 for loss
-        Rnop = round( Rop + K * (1 - Eop), 2) # Calculate new Rop as Rnop, 1 for win
-
-        ## Create loss game entry for author
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(5,{ctx.author.id},{member.id},"loss","{pt}")')
-        conn.commit()
-        # update rating and game statistics
-        cursor.execute(f'UPDATE rating SET rating = {Rna}, games = games + 1, losses = losses + 1 where member_id={ctx.author.id}')
-        conn.commit()
-
-        # Create win game entry for opponent
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(5,{member.id},{ctx.author.id},"win","{pt}")')
-        conn.commit()
-        # update rating and game statistics
-        cursor.execute(f'UPDATE rating SET rating = {Rnop}, games = games + 1, wins = wins + 1 where member_id={member.id}')
-        conn.commit()
-
-        await ctx.send(f"{member.name} won with {points}!")
-
-        # Pretty output of updated rating for participants
-        for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
-            embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-            embed.add_field(name="Delta", value=Ea, inline=True)
-            embed.add_field(name="Rating", value=row[0], inline=True)
-            embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
-            await ctx.send(embed=embed)
-        for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
-            embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-            embed.add_field(name="Delta", value=Eop, inline=True)
-            embed.add_field(name="Rating", value=row[0], inline=True)
-            embed.set_footer(text=member.name, icon_url = member.avatar_url)
-            await ctx.send(embed=embed)
-
-    # Update rating as if mentioned opponent lost the game
-    elif result in 'loss':
-        ## gathered delta points from current game result
-        Ea = round( 1 / (1 + 10 ** ((Rop - Ra) / 400)), 2)
-        Eop = round( 1 / (1 + 10 ** ((Ra - Rop) / 400 )), 2)
-
-        ## calculate new rating
-        Rna = round( Ra + K * (1 - Ea), 2)                    # Calculate new Ra as Rna, 1 for win
-        Rnop = round( Rop + K * (0 - Eop), 2)                 # Calculate new Rop as Rnop, 0 for loss
-
-        # Create win game entry for message author
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(5,{ctx.author.id},{member.id},"win","{pt}")')
-        conn.commit()
-        # update rating and game statistics
-        cursor.execute(f'UPDATE rating SET rating = {Rna}, games = games + 1, wins = wins + 1 where member_id={ctx.author.id}')
-        conn.commit()
-
-        # Create loss game entry for mentioned opponent
-        cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES(5,{member.id},{ctx.author.id},"loss","{pt}")')
-        conn.commit()
-        # update rating and game statistics
-        cursor.execute(f'UPDATE rating SET rating = {Rnop}, games = games + 1, losses = losses + 1 where member_id={member.id}')
-        conn.commit()
-
-        await ctx.send(f'{ctx.author.name} won with {points}!')
-
-        # Pretty output of updated rating for participants 
-        for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
-            embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-            embed.add_field(name="Delta", value=Ea, inline=True)
-            embed.add_field(name="Rating", value=row[0], inline=True)
-            embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
-            await ctx.send(embed=embed)
-        for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
-            embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-            embed.add_field(name="Delta", value=Eop, inline=True)
-            embed.add_field(name="Rating", value=row[0], inline=True)
-            embed.set_footer(text=member.name, icon_url = member.avatar_url)
-            await ctx.send(embed=embed)
+    if gcount >= 10:
+        embed = discord.Embed(title="ERROR", colour=discord.Colour(0xFF0000))
+        embed.add_field(name="cause", value='{} and {} has reached {} games!'.format(ctx.author.name, member.name, gcount), inline=True)
+        await ctx.send(embed=embed)
     else:
-        await ctx.send(f'Wrong result!')
+    
+            # extract current rating for message author
+        for a_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
+            Ra = a_row[0] # current author rating
+    
+        # extract current rating for mentioned opponent
+        for op_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
+            Rop = op_row[0] # current opponent rating
+
+        cursor.execute(f'SELECT MAX(id) from games')
+        gmax = cursor.fetchone()[0]
+
+        # Update rating as if mentioned opponent won the game
+        if result in 'win':
+            # calculating ELO
+            ## gathered delta points from current game
+            Ea = round( 1 / ( 1 + 10 ** ((Rop - Ra) / 400)), 2) # delta for author
+            Eop = round( 1 / ( 1 + 10 ** ((Ra - Rop) / 400)), 2) # delta for opponent
+    
+            ## update rating
+            Rna = round( Ra + K * (0 - Ea), 2) # Calculate new Ra as Rna, 0 for loss
+            Rnop = round( Rop + K * (1 - Eop), 2) # Calculate new Rop as Rnop, 1 for win
+    
+            ## Create loss game entry for author
+            cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gmax} + 1,{ctx.author.id},{member.id},"loss","{pt}")')
+            conn.commit()
+            # update rating and game statistics
+            cursor.execute(f'UPDATE rating SET rating = {Rna}, games = games + 1, losses = losses + 1 where member_id={ctx.author.id}')
+            conn.commit()
+    
+            # Create win game entry for opponent
+            cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gmax} + 1,{member.id},{ctx.author.id},"win","{pt}")')
+            conn.commit()
+            # update rating and game statistics
+            cursor.execute(f'UPDATE rating SET rating = {Rnop}, games = games + 1, wins = wins + 1 where member_id={member.id}')
+            conn.commit()
+    
+            await ctx.send(f"{member.name} won with {points}!")
+    
+            # Pretty output of updated rating for participants
+            for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
+                embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
+                embed.add_field(name="Delta", value=Ea, inline=True)
+                embed.add_field(name="Rating", value=row[0], inline=True)
+                embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
+                await ctx.send(embed=embed)
+            for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
+                embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
+                embed.add_field(name="Delta", value=Eop, inline=True)
+                embed.add_field(name="Rating", value=row[0], inline=True)
+                embed.set_footer(text=member.name, icon_url = member.avatar_url)
+                await ctx.send(embed=embed)
+    
+        # Update rating as if mentioned opponent lost the game
+        elif result in 'loss':
+            ## gathered delta points from current game result
+            Ea = round( 1 / (1 + 10 ** ((Rop - Ra) / 400)), 2)
+            Eop = round( 1 / (1 + 10 ** ((Ra - Rop) / 400 )), 2)
+    
+            ## calculate new rating
+            Rna = round( Ra + K * (1 - Ea), 2)                    # Calculate new Ra as Rna, 1 for win
+            Rnop = round( Rop + K * (0 - Eop), 2)                 # Calculate new Rop as Rnop, 0 for loss
+    
+            # Create win game entry for message author
+            cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gmax} + 1,{ctx.author.id},{member.id},"win","{pt}")')
+            conn.commit()
+            # update rating and game statistics
+            cursor.execute(f'UPDATE rating SET rating = {Rna}, games = games + 1, wins = wins + 1 where member_id={ctx.author.id}')
+            conn.commit()
+    
+            # Create loss game entry for mentioned opponent
+            cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gmax} + 1,{member.id},{ctx.author.id},"loss","{pt}")')
+            conn.commit()
+            # update rating and game statistics
+            cursor.execute(f'UPDATE rating SET rating = {Rnop}, games = games + 1, losses = losses + 1 where member_id={member.id}')
+            conn.commit()
+    
+            await ctx.send(f'{ctx.author.name} won with {points}!')
+    
+            # Pretty output of updated rating for participants 
+            for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
+                embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
+                embed.add_field(name="Delta", value=Ea, inline=True)
+                embed.add_field(name="Rating", value=row[0], inline=True)
+                embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
+                await ctx.send(embed=embed)
+            for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
+                embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
+                embed.add_field(name="Delta", value=Eop, inline=True)
+                embed.add_field(name="Rating", value=row[0], inline=True)
+                embed.set_footer(text=member.name, icon_url = member.avatar_url)
+                await ctx.send(embed=embed)
+        else:
+            await ctx.send(f'Wrong result!')
 
 # outpud upon bot connection to the server
 @bot.event
