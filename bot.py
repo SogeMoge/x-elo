@@ -73,7 +73,7 @@ async def game_check(ctx, member: discord.Member):
     cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
     gcount = cursor.fetchone()[0]
     embed = discord.Embed(colour=discord.Colour(0x6790a7))
-    embed.add_field(name="Result", value='{} and {} has played {} games in total.'.format(ctx.author.name, member.name, gcount), inline=True)
+    embed.add_field(name="Games played", value='{} and {} has played {} games in total.'.format(ctx.author.name, member.name, gcount), inline=True)
     await ctx.send(embed=embed)
 
 # Command shows League Leaderboard from top to bottom
@@ -98,8 +98,8 @@ async def results(ctx, member: discord.Member, result, points):
     gcount = cursor.fetchone()[0]
 
     if gcount >= 10:
-        embed = discord.Embed(title="ERROR", colour=discord.Colour(0xFF0000))
-        embed.add_field(name="cause", value='{} and {} has reached {} games!'.format(ctx.author.name, member.name, gcount), inline=True)
+        embed = discord.Embed(colour=discord.Colour(0xFF0000))
+        embed.add_field(name="ERROR", value='{} and {} has reached {} games!'.format(ctx.author.name, member.name, gcount), inline=True)
         await ctx.send(embed=embed)
     else:
     
