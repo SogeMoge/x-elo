@@ -65,6 +65,17 @@ async def status(ctx):
         embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
+# command outputs game statistics for author of the command
+@bot.command(name='check', help=' - check how many games you played with tagged user', aliases=['chk'])
+@commands.has_role('league')
+async def game_check(ctx, member: discord.Member):
+    #check if players have >= 10 games with each other
+    cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
+    gcount = cursor.fetchone()[0]
+    embed = discord.Embed(colour=discord.Colour(0x6790a7))
+    embed.add_field(name="Result", value='{} and {} has played {} games in total.'.format(ctx.author.name, member.name, gcount), inline=True)
+    await ctx.send(embed=embed)
+
 # Command shows League Leaderboard from top to bottom
 @bot.command(name='list', help=' - show leaderbord', aliases=['leaderboard'])
 @commands.has_role('league')
