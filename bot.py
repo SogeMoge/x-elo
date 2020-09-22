@@ -77,14 +77,32 @@ async def game_check(ctx, member: discord.Member):
     await ctx.send(embed=embed)
 
 # Command shows League Leaderboard from top to bottom
-@bot.command(name='list', help=' - show leaderbord', aliases=['leaderboard'])
+@bot.command(name='top', help=' - show leaderbord', aliases=['leaderboard'])
 @commands.has_role('league')
-async def list(ctx):
+async def top(ctx):
+    embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0x6790a7))
+    # cursor.execute(f'SELECT COUNT(member_id) FROM rating;')
+    # pnum = cursor.fetchone()[0]
+    n = 0
     for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC'):
-        embed = discord.Embed(title="leaderboard", colour=discord.Colour(0x6790a7))
+        n = n + 1
+        embed.add_field(name="Position", value=n, inline=True)
         embed.add_field(name="Name", value=row[1], inline=True)
         embed.add_field(name="Rating", value=row[0], inline=True)
-        await ctx.send(embed=embed)
+    await ctx.send(embed=embed)
+
+# Command shows top10 from League Leaderboard
+@bot.command(name='top10', help=' - show leaderbord', aliases=['10'])
+@commands.has_role('league')
+async def top10(ctx):
+    embed = discord.Embed(title="Top 10 League players", colour=discord.Colour(0x6790a7))
+    n = 0
+    for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC LIMIT 10'):
+        n = n + 1
+        embed.add_field(name="Position", value=n, inline=True)
+        embed.add_field(name="Name", value=row[1], inline=True)
+        embed.add_field(name="Rating", value=row[0], inline=True)
+    await ctx.send(embed=embed)
 
 # command for entering game results, calculaton and updating rating
 @bot.command(name='game', help=' - submit opponent\'s result "@opponent win/loss points"')
