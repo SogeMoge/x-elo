@@ -13,6 +13,8 @@ from discord.utils import get
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
+client = discord.Client()
+
 # set prefix for bot commands
 bot = commands.Bot(command_prefix='%')
 
@@ -21,6 +23,8 @@ import sqlite3
 conn = sqlite3.connect(os.getenv('DB'))
 cursor = conn.cursor()
 # conn.close()  # close database connection
+
+reactions = ['✅','❎']
 
 ######################
 # @bot.command(name='полом', help=' - Мяукнет в ответ')
@@ -90,6 +94,7 @@ async def top(ctx):
         embed.add_field(name="Name", value=row[1], inline=True)
         embed.add_field(name="Rating", value=row[0], inline=True)
     await ctx.send(embed=embed)
+    
 
 # Command shows top10 from League Leaderboard
 @bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
@@ -214,6 +219,31 @@ async def results(ctx, member: discord.Member, result, points):
                 await ctx.send(embed=embed)
         else:
             await ctx.send(f'Wrong result!')
+
+# https://www.mmbyte.com/article/95316.html
+#
+#msg = await ctx.send(embed=embed)
+#for reaction in reactions:
+#    await msg.add_reaction(reaction)
+#
+# @bot.event
+# async def on_reaction_add(reaction, user):
+#     message = reaction.message
+#     emoji = reaction.emoji
+
+#     if user.bot:
+#         return
+
+#     if emoji == "emoji 1":
+#         fixed_channel = bot.get_channel(channel_id)
+#         if message.content: await fixed_channel.send(message.content)
+#         elif message.embed: await fixed_channel.send(message.embed)
+#     elif emoji == "emoji 2":
+#         #do stuff
+#     elif emoji == "emoji 3":
+#         #do stuff
+#     else:
+#         return
 
 # outpud upon bot connection to the server
 @bot.event
