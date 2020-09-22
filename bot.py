@@ -57,7 +57,7 @@ async def giverole(ctx, member: discord.Member):
 @commands.has_role('league')
 async def status(ctx):
     for row in cursor.execute(f'SELECT rating,games,wins,losses FROM rating WHERE member_id={ctx.author.id}'):
-        embed = discord.Embed(title="League profile", colour=discord.Colour(0x6790a7))
+        embed = discord.Embed(title="League profile", colour=discord.Colour(0xFFD700))
         embed.add_field(name="Rating", value=row[0], inline=False)
         embed.add_field(name="Games", value=row[1], inline=True)
         embed.add_field(name="Wins", value=row[2], inline=True)
@@ -80,7 +80,7 @@ async def game_check(ctx, member: discord.Member):
 @bot.command(name='top', help=' - show full league leaderbord', aliases=['leaderboard'])
 @commands.has_role('league')
 async def top(ctx):
-    embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0x6790a7))
+    embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0xFFD700))
     # cursor.execute(f'SELECT COUNT(member_id) FROM rating;')
     # pnum = cursor.fetchone()[0]
     n = 0
@@ -95,7 +95,7 @@ async def top(ctx):
 @bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
 @commands.has_role('league')
 async def top10(ctx):
-    embed = discord.Embed(title="Top 10 League players", colour=discord.Colour(0x6790a7))
+    embed = discord.Embed(title="Top 10 League players", colour=discord.Colour(0xFFD700))
     n = 0
     for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC LIMIT 10'):
         n = n + 1
