@@ -162,7 +162,9 @@ async def results(ctx, member: discord.Member, result, points):
             cursor.execute(f'UPDATE rating SET rating = {Rnop}, games = games + 1, wins = wins + 1 where member_id={member.id}')
             conn.commit()
     
-            await ctx.send(f"{member.name} won with {points}!")
+            msg = await ctx.send(f"{member.name} won with {points}!")
+            for reaction in reactions:
+                await msg.add_reaction(reaction)
     
             # Pretty output of updated rating for participants
             for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
