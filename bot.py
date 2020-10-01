@@ -110,8 +110,20 @@ async def on_raw_reaction_add(payload):
             user = bot.get_user(payload.user_id)
             msg = await fixed_channel.fetch_message(payload.message_id)
             await msg.remove_reaction(emoji, user)
-            embed = msg.embeds[0]
-            await fixed_channel.send(embed=embed)
+            await msg.delete()
+            # embed = msg.embeds[0]
+            # await fixed_channel.send(embed=embed)
+
+            embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0xFFD700))
+            n = 0
+            for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC'):
+                n = n + 1
+                embed.add_field(name="Position", value=n, inline=True)
+                embed.add_field(name="Name", value=row[1], inline=True)
+                embed.add_field(name="Rating", value=row[0], inline=True)
+           # await ctx.send(embed=embed)
+            top = await fixed_channel.send(embed=embed)
+            await top.add_reaction(update_reaction)
 
 # Command shows top10 from League Leaderboard
 @bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
@@ -209,7 +221,7 @@ async def results(ctx, member: discord.Member, result, points):
             Rna = round( Ra + K * (1 - Ea), 2)                    # Calculate new Ra as Rna, 1 for win
             Rna_diff = round(Rna - Ra, 2) 
             Rnop = round( Rop + K * (0 - Eop), 2)                 # Calculate new Rop as Rnop, 0 for loss
-            Rnop_diff = round(Eop - Rnop, 2)
+            Rnop_diff = round(Rop - Rnop, 2)
     
             # Create win game entry for message author
             cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gmax} + 1,{ctx.author.id},{member.id},"win","{pt}")')
