@@ -25,6 +25,7 @@ cursor = conn.cursor()
 # conn.close()  # close database connection
 
 reactions = ['✅','❎']
+update_reaction = '\U0001f504'
 
 ######################
 # @bot.command(name='полом', help=' - Мяукнет в ответ')
@@ -82,7 +83,7 @@ async def game_check(ctx, member: discord.Member):
 
 # Command shows League Leaderboard from top to bottom
 @bot.command(name='top', help=' - show full league leaderbord', aliases=['leaderboard'])
-@commands.has_role('league')
+@commands.has_role('league admin')
 async def top(ctx):
     embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0xFFD700))
     # cursor.execute(f'SELECT COUNT(member_id) FROM rating;')
@@ -93,8 +94,22 @@ async def top(ctx):
         embed.add_field(name="Position", value=n, inline=True)
         embed.add_field(name="Name", value=row[1], inline=True)
         embed.add_field(name="Rating", value=row[0], inline=True)
-    await ctx.send(embed=embed)
-    
+    # await ctx.send(embed=embed)
+    top = await ctx.send(embed=embed)
+    await top.add_reaction(update_reaction)
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    user = bot.get_user(payload.user_id)
+    emoji = payload.emoji
+    if user == 745267895612735609:
+        return
+    elif payload.emoji.name == update_reaction:
+        fixed_channel = bot.get_channel(757377279474139156)
+        msg = await fixed_channel.fetch_message(payload.message_id)
+        await msg.remove_reaction(emoji, user)
+        embed = msg.embeds[0]
+        await fixed_channel.send(embed=embed)
 
 # Command shows top10 from League Leaderboard
 @bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
@@ -134,7 +149,7 @@ async def results(ctx, member: discord.Member, result, points):
         for op_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
             Rop = op_row[0] # current opponent rating
 
-        cursor.execute(f'SELECT MAX(id) from games')
+        cursor.execute(f'SELECT COALESCE(MAX(id), 0) from games')
         gmax = cursor.fetchone()[0]
 
         # Update rating as if mentioned opponent won the game
@@ -146,7 +161,9 @@ async def results(ctx, member: discord.Member, result, points):
     
             ## update rating
             Rna = round( Ra + K * (0 - Ea), 2) # Calculate new Ra as Rna, 0 for loss
+            Rna_diff = round(Ra - Rna, 2)
             Rnop = round( Rop + K * (1 - Eop), 2) # Calculate new Rop as Rnop, 1 for win
+            Rnop_diff = round(Rnop - Rop, 2)
     
             ## Create loss game entry for author
             cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gmax} + 1,{ctx.author.id},{member.id},"loss","{pt}")')
@@ -169,13 +186,13 @@ async def results(ctx, member: discord.Member, result, points):
             # Pretty output of updated rating for participants
             for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
                 embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-                embed.add_field(name="Delta", value=Ea, inline=True)
+                embed.add_field(name="Diff", value=Rna_diff, inline=True)
                 embed.add_field(name="Rating", value=row[0], inline=True)
                 embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
                 await ctx.send(embed=embed)
             for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
                 embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-                embed.add_field(name="Delta", value=Eop, inline=True)
+                embed.add_field(name="Diff", value=Rnop_diff, inline=True)
                 embed.add_field(name="Rating", value=row[0], inline=True)
                 embed.set_footer(text=member.name, icon_url = member.avatar_url)
                 await ctx.send(embed=embed)
@@ -188,7 +205,9 @@ async def results(ctx, member: discord.Member, result, points):
     
             ## calculate new rating
             Rna = round( Ra + K * (1 - Ea), 2)                    # Calculate new Ra as Rna, 1 for win
+            Rna_diff = round(Rna - Ra, 2) 
             Rnop = round( Rop + K * (0 - Eop), 2)                 # Calculate new Rop as Rnop, 0 for loss
+            Rnop_diff = round(Eop - Rnop, 2)
     
             # Create win game entry for message author
             cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gmax} + 1,{ctx.author.id},{member.id},"win","{pt}")')
@@ -209,13 +228,13 @@ async def results(ctx, member: discord.Member, result, points):
             # Pretty output of updated rating for participants 
             for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
                 embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-                embed.add_field(name="Delta", value=Ea, inline=True)
+                embed.add_field(name="Diff", value=Rna_diff, inline=True)
                 embed.add_field(name="Rating", value=row[0], inline=True)
                 embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
                 await ctx.send(embed=embed)
             for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member.id}'):
                 embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
-                embed.add_field(name="Delta", value=Eop, inline=True)
+                embed.add_field(name="Diff", value=Rnop_diff, inline=True)
                 embed.add_field(name="Rating", value=row[0], inline=True)
                 embed.set_footer(text=member.name, icon_url = member.avatar_url)
                 await ctx.send(embed=embed)
