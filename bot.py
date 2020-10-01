@@ -121,7 +121,6 @@ async def on_raw_reaction_add(payload):
                 embed.add_field(name="Position", value=n, inline=True)
                 embed.add_field(name="Name", value=row[1], inline=True)
                 embed.add_field(name="Rating", value=row[0], inline=True)
-           # await ctx.send(embed=embed)
             top = await fixed_channel.send(embed=embed)
             await top.add_reaction(update_reaction)
 
@@ -142,6 +141,17 @@ async def top10(ctx):
 @bot.command(name='game', help=' - submit opponent\'s result "@opponent win/loss points"')
 @commands.has_role('league')
 async def results(ctx, member: discord.Member, result, points):
+    role_check = discord.utils.get(ctx.guild.roles, name="league")
+    if ctx.author.id == member.id:
+        embed = discord.Embed(colour=discord.Colour(0xFF0000))
+        embed.add_field(name="ERROR", value='You can not play with yourself!', inline=True)
+        await ctx.send(embed=embed)
+        return
+    elif role_check not in member.roles:
+        embed = discord.Embed(colour=discord.Colour(0xFF0000))
+        embed.add_field(name="ERROR", value='{} is not a league member!'.format(member.name), inline=True)
+        await ctx.send(embed=embed)
+        return
     pt = points
     K = 32        # K-factor
 
