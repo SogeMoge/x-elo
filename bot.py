@@ -100,16 +100,18 @@ async def top(ctx):
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    user = bot.get_user(payload.user_id)
+    user = payload.user_id
     emoji = payload.emoji
     if user == 745267895612735609:
         return
-    elif payload.emoji.name == update_reaction:
-        fixed_channel = bot.get_channel(757377279474139156)
-        msg = await fixed_channel.fetch_message(payload.message_id)
-        await msg.remove_reaction(emoji, user)
-        embed = msg.embeds[0]
-        await fixed_channel.send(embed=embed)
+    else:
+        if payload.emoji.name == update_reaction:
+            fixed_channel = bot.get_channel(757377279474139156)
+            user = bot.get_user(payload.user_id)
+            msg = await fixed_channel.fetch_message(payload.message_id)
+            await msg.remove_reaction(emoji, user)
+            embed = msg.embeds[0]
+            await fixed_channel.send(embed=embed)
 
 # Command shows top10 from League Leaderboard
 @bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
