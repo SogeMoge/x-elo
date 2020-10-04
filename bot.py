@@ -106,7 +106,7 @@ async def on_raw_reaction_add(payload):
         return
     else:
         if payload.emoji.name == update_reaction:
-            fixed_channel = bot.get_channel(757377279474139156)
+            fixed_channel = bot.get_channel(757377279474139156) #channel where the command will work
             user = bot.get_user(payload.user_id)
             msg = await fixed_channel.fetch_message(payload.message_id)
             await msg.remove_reaction(emoji, user)
@@ -247,7 +247,9 @@ async def results(ctx, member: discord.Member, result, points):
             cursor.execute(f'UPDATE rating SET rating = {Rnop}, games = games + 1, losses = losses + 1 where member_id={member.id}')
             conn.commit()
     
-            await ctx.send(f'{ctx.author.name} won with {points}!')
+            msg = await ctx.send(f'{ctx.author.name} won with {points}!')
+            for reaction in reactions:
+                await msg.add_reaction(reaction)
     
             # Pretty output of updated rating for participants 
             for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={ctx.author.id}'):
