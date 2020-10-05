@@ -12,8 +12,8 @@ from discord.utils import get
 # load token from .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-INFO_CH_ID = os.getenv('INFO_CHANNEL_ID')
-BOT_ID = os.getenv('BOT_USER_ID')
+INFO_CH_ID = int(os.getenv('INFO_CHANNEL_ID'))
+BOT_ID = int(os.getenv('BOT_USER_ID'))
 
 client = discord.Client()
 
