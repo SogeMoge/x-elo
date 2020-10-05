@@ -12,6 +12,8 @@ from discord.utils import get
 # load token from .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+INFO_CH_ID = os.getenv('INFO_CHANNEL_ID')
+BOT_ID = os.getenv('BOT_USER_ID')
 
 client = discord.Client()
 
@@ -102,11 +104,11 @@ async def top(ctx):
 async def on_raw_reaction_add(payload):
     user = payload.user_id
     emoji = payload.emoji
-    if user == 745267895612735609:
+    if user == BOT_ID:
         return
     else:
         if payload.emoji.name == update_reaction:
-            fixed_channel = bot.get_channel(757377279474139156) #channel where the command will work
+            fixed_channel = bot.get_channel(INFO_CH_ID) #channel where the command will work
             user = bot.get_user(payload.user_id)
             msg = await fixed_channel.fetch_message(payload.message_id)
             await msg.remove_reaction(emoji, user)
