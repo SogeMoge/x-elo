@@ -24,8 +24,8 @@ conn = sqlite3.connect(os.getenv('DB'))
 cursor = conn.cursor()
 # conn.close()  # close database connection
 
-reactions = ['✅','❎']
-update_reaction = '\U0001f504'
+reactions = ['\U00002705','\U0000274e'] # check and cross marks
+update_reaction = '\U0001f504' # circle arrows
 
 ######################
 # @bot.command(name='полом', help=' - Мяукнет в ответ')
@@ -204,6 +204,7 @@ async def results(ctx, member: discord.Member, result, points):
             conn.commit()
     
             msg = await ctx.send(f"{member.name} won with {points}!")
+            # add confirmation reactions to game results message
             for reaction in reactions:
                 await msg.add_reaction(reaction)
     
@@ -248,6 +249,7 @@ async def results(ctx, member: discord.Member, result, points):
             conn.commit()
     
             msg = await ctx.send(f'{ctx.author.name} won with {points}!')
+            # add confirmation reactions to game results message
             for reaction in reactions:
                 await msg.add_reaction(reaction)
     
@@ -266,31 +268,6 @@ async def results(ctx, member: discord.Member, result, points):
                 await ctx.send(embed=embed)
         else:
             await ctx.send(f'Wrong result!')
-
-# https://www.mmbyte.com/article/95316.html
-#
-#msg = await ctx.send(embed=embed)
-#for reaction in reactions:
-#    await msg.add_reaction(reaction)
-#
-# @bot.event
-# async def on_reaction_add(reaction, user):
-#     message = reaction.message
-#     emoji = reaction.emoji
-
-#     if user.bot:
-#         return
-
-#     if emoji == "emoji 1":
-#         fixed_channel = bot.get_channel(channel_id)
-#         if message.content: await fixed_channel.send(message.content)
-#         elif message.embed: await fixed_channel.send(message.embed)
-#     elif emoji == "emoji 2":
-#         #do stuff
-#     elif emoji == "emoji 3":
-#         #do stuff
-#     else:
-#         return
 
 # outpud upon bot connection to the server
 @bot.event
