@@ -93,8 +93,8 @@ async def top(ctx):
     n = 0
     for row in cursor.execute(f'SELECT rating||" "||member_name FROM rating ORDER BY rating DESC, games DESC;'):
         n = n + 1
-        embed.add_field(name="№", value=n, inline=False)
-        embed.add_field(name="Rating", value=row[0], inline=True)
+        # embed.add_field(name="№", value=n, inline=False)
+        embed.add_field(name="Rating", value=n + ", " + row[0], inline=False)
     # await ctx.send(embed=embed)
     top = await ctx.send(embed=embed)
     await top.add_reaction(update_reaction)
@@ -119,8 +119,8 @@ async def on_raw_reaction_add(payload):
             n = 0
             for row in cursor.execute(f'SELECT rating||" "||member_name FROM rating ORDER BY rating DESC, games DESC;'):
                 n = n + 1
-                embed.add_field(name="№", value=n, inline=False)
-                embed.add_field(name="Rating", value=row[0], inline=True)
+                # embed.add_field(name="№", value=n, inline=True)
+                embed.add_field(name="Rating", value=n + ", " + row[0], inline=False)
             top = await fixed_channel.send(embed=embed)
             await top.add_reaction(update_reaction)
 
