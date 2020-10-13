@@ -91,10 +91,9 @@ async def top(ctx):
     # cursor.execute(f'SELECT COUNT(member_id) FROM rating;')
     # pnum = cursor.fetchone()[0]
     n = 0
-    for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC, games DESC;'):
+    for row in cursor.execute(f'SELECT rating||" "||member_name FROM rating ORDER BY rating DESC, games DESC;'):
         n = n + 1
-        embed.add_field(name="Position", value=n, inline=True)
-        embed.add_field(name="Name", value=row[1], inline=True)
+        embed.add_field(name="№", value=n, inline=True)
         embed.add_field(name="Rating", value=row[0], inline=True)
     # await ctx.send(embed=embed)
     top = await ctx.send(embed=embed)
