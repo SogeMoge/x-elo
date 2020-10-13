@@ -117,10 +117,9 @@ async def on_raw_reaction_add(payload):
 
             embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0xFFD700))
             n = 0
-            for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC'):
+            for row in cursor.execute(f'SELECT rating||" "||member_name FROM rating ORDER BY rating DESC, games DESC;'):
                 n = n + 1
-                embed.add_field(name="Position", value=n, inline=True)
-                embed.add_field(name="Name", value=row[1], inline=True)
+                embed.add_field(name="№", value=n, inline=True)
                 embed.add_field(name="Rating", value=row[0], inline=True)
             top = await fixed_channel.send(embed=embed)
             await top.add_reaction(update_reaction)
