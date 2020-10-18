@@ -13,7 +13,6 @@ from discord.utils import get
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 INFO_CH_ID = int(os.getenv('INFO_CHANNEL_ID'))
-RES_CH_ID = int(os.getenv('RESULT_CHANNEL_ID'))
 BOT_ID = int(os.getenv('BOT_USER_ID'))
 
 
