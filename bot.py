@@ -13,7 +13,9 @@ from discord.utils import get
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 INFO_CH_ID = int(os.getenv('INFO_CHANNEL_ID'))
+RES_CH_ID = int(os.getenv('RESULT_CHANNEL_ID'))
 BOT_ID = int(os.getenv('BOT_USER_ID'))
+
 
 client = discord.Client()
 
@@ -152,6 +154,10 @@ async def results(ctx, member: discord.Member, result, points):
         embed.add_field(name="ERROR", value='{} is not a league member!'.format(member.name), inline=True)
         await ctx.send(embed=embed)
         return
+    elif ctx.channel.id != RES_CH_ID:
+        embed = discord.Embed(colour=discord.Colour(0xFF0000))
+        embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
+        await ctx.send(embed=embed)
     pt = points
     K = 32        # K-factor
 
