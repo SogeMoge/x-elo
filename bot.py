@@ -144,9 +144,9 @@ async def top10(ctx):
 @commands.has_role('league')
 async def results(ctx, member: discord.Member, result, points):
     role_check = discord.utils.get(ctx.guild.roles, name="league")
-    if ctx.author.id == member.id:
+    if ctx.channel.id != 'RES_CH_ID':
         embed = discord.Embed(colour=discord.Colour(0xFF0000))
-        embed.add_field(name="ERROR", value='You can not play with yourself!', inline=True)
+        embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
         await ctx.send(embed=embed)
         return
     elif role_check not in member.roles:
@@ -154,9 +154,9 @@ async def results(ctx, member: discord.Member, result, points):
         embed.add_field(name="ERROR", value='{} is not a league member!'.format(member.name), inline=True)
         await ctx.send(embed=embed)
         return
-    elif ctx.channel.id != 'RES_CH_ID':
+    elif ctx.author.id == member.id:
         embed = discord.Embed(colour=discord.Colour(0xFF0000))
-        embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
+        embed.add_field(name="ERROR", value='You can not play with yourself!', inline=True)
         await ctx.send(embed=embed)
         return
     pt = points
