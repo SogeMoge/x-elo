@@ -143,8 +143,8 @@ async def top10(ctx):
 @bot.command(name='game', help=' - submit opponent\'s result "@opponent win/loss points"')
 @commands.has_role('league')
 async def results(ctx, member: discord.Member, result, points):
-    role_check = discord.utils.get(ctx.guild.roles, name="league")
-    if ctx.channel.id != 'RES_CH_ID':
+    role_check = discord.utils.get(ctx.guild.roles, name="league")  
+    if ctx.channel.name != 'запись-результатов':
         embed = discord.Embed(colour=discord.Colour(0xFF0000))
         embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
         await ctx.send(embed=embed)
