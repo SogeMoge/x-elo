@@ -92,7 +92,7 @@ async def top(ctx):
     # cursor.execute(f'SELECT COUNT(member_id) FROM rating;')
     # pnum = cursor.fetchone()[0]
     n = 0
-    for row in cursor.execute(f'SELECT rating||" "||member_name FROM rating WHERE games >= 1 ORDER BY rating DESC, games DESC;'):
+    for row in cursor.execute(f'SELECT rating||" - "||member_name||", W:"||wins||" L:"||losses WHERE games >= 1 ORDER BY rating DESC, games DESC;'):
         n = n + 1
         # embed.add_field(name="№", value=n, inline=False)
         embed.add_field(name="\u200b", value='{} - {}'.format(n, row[0]), inline=False)
@@ -118,7 +118,7 @@ async def on_raw_reaction_add(payload):
 
             embed = discord.Embed(title="League leaderboard", colour=discord.Colour(0xFFD700))
             n = 0
-            for row in cursor.execute(f'SELECT rating||" - "||member_name||", w:"||wins||" l:"||losses FROM rating WHERE games >= 1 ORDER BY rating DESC, games DESC;'):
+            for row in cursor.execute(f'SELECT rating||" - "||member_name||", W:"||wins||" L:"||losses FROM rating WHERE games >= 1 ORDER BY rating DESC, games DESC;'):
                 n = n + 1
                 # embed.add_field(name="№", value=n, inline=True)
                 embed.add_field(name="\u200b", value='{} - {}'.format(n, row[0]), inline=False)
