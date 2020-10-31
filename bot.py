@@ -81,7 +81,7 @@ async def game_check(ctx, member: discord.Member):
     cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
     gcount = cursor.fetchone()[0]
     embed = discord.Embed(colour=discord.Colour(0x6790a7))
-    embed.add_field(name="Games played", value='{} and {} has played {} games in total.'.format(ctx.author.name, member.name, gcount), inline=True)
+    embed.add_field(name="Games played", value='{} and {} have played {} games in total.'.format(ctx.author.name, member.name, gcount), inline=True)
     await ctx.send(embed=embed)
 
 # Command shows League Leaderboard from top to bottom
@@ -127,7 +127,7 @@ async def on_raw_reaction_add(payload):
 
 # Command shows top10 from League Leaderboard
 @bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
-@commands.has_role('league')
+@commands.has_role('league admin')
 async def top10(ctx):
     embed = discord.Embed(title="Top 10 League players", colour=discord.Colour(0xFFD700))
     n = 0
