@@ -170,13 +170,52 @@ async def tresults(ctx, member1: discord.Member, result1, member2: discord.Membe
     pt = points
     K = 32
     # extract current rating for message winner
-    for w_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member1.id}'):
-        Rw = w_row[0] # winner rating
-    await ctx.send(Rw)
+    for a_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member1.id}'):
+        Ra = a_row[0] # winner rating
     # extract current rating for mentioned looser
-    for l_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member2.id}'):
-        Rl = l_row[0] # looser rating
-    await ctx.send(Rl)
+    for op_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member2.id}'):
+        Rop = op_row[0] # looser rating
+    # all tournaments games will be inserted with number 0
+    gtourney = 0
+    # calculating ELO
+    ## gathered delta points from current game result
+    Ea = round( 1 / (1 + 10 ** ((Rop - Ra) / 400)), 2)
+    Eop = round( 1 / (1 + 10 ** ((Ra - Rop) / 400 )), 2)
+    ## calculate new rating
+    Rna = round( Ra + K * (1 - Ea), 2)                    # Calculate new Ra as Rna, 1 for win
+    Rna_diff = round(Rna - Ra, 2) 
+    Rnop = round( Rop + K * (0 - Eop), 2)                 # Calculate new Rop as Rnop, 0 for loss
+    Rnop_diff = round(Rop - Rnop, 2)
+    # Create win game entry for message author
+    cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gtourney},{member1.id},{member2.id},"win","{pt}")')
+    conn.commit()
+    # update rating and game statistics
+    cursor.execute(f'UPDATE rating SET rating = {Rna}, games = games + 1, wins = wins + 1 where member_id={member1.id}')
+    conn.commit()
+    # Create loss game entry for mentioned opponent
+    cursor.execute(f'INSERT INTO games (id,member_id,opponent_id,result,score) VALUES({gtourney},{member2.id},{member1.id},"loss","{pt}")')
+    conn.commit()
+    # update rating and game statistics
+    cursor.execute(f'UPDATE rating SET rating = {Rnop}, games = games + 1, losses = losses + 1 where member_id={member2.id}')
+    conn.commit()
+    msg = await ctx.send(f'{member1.name} won in a tournament match with {member2.name},  {points}!')
+    # add confirmation reactions to game results message
+    for reaction in reactions:
+        await msg.add_reaction(reaction)
+    # Pretty output of updated rating for participants 
+    for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member1.id}'):
+        embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
+        embed.add_field(name="Diff", value=Rna_diff, inline=True)
+        embed.add_field(name="Rating", value=row[0], inline=True)
+        embed.set_footer(text=member1.name, icon_url = member1.avatar_url)
+        await ctx.send(embed=embed)
+    for row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member2.id}'):
+        embed = discord.Embed(title="Updated League profile", colour=discord.Colour(0x6790a7))
+        embed.add_field(name="Diff", value=Rnop_diff, inline=True)
+        embed.add_field(name="Rating", value=row[0], inline=True)
+        embed.set_footer(text=member2.name, icon_url = member2.avatar_url)
+        await ctx.send(embed=embed)
+
 
 
 # command for entering game results, calculaton and updating rating
