@@ -31,12 +31,12 @@ reactions = ['\U00002705','\U0000274e'] # check and cross marks
 update_reaction = '\U0001f504' # circle arrows
 
 ######################
-# @bot.command(name='полом', help=' - Мяукнет в ответ')
-# async def mew(ctx):
-#     mew_sound = ['Кошечка говорит мяу']
+@bot.command(name='полом', help=' - Мяукнет в ответ')
+async def mew(ctx):
+    mew_sound = ['Кошечка говорит мяу']
 
-#     response = random.choice(mew_sound)
-#     await ctx.send(response)
+    response = random.choice(mew_sound)
+    await ctx.send(response)
 ######################
 
 @bot.command(name='register', help=' - apply league role to a user', aliases=['reg'])
