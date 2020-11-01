@@ -15,8 +15,14 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 INFO_CH_ID = int(os.getenv('INFO_CHANNEL_ID'))
 BOT_ID = int(os.getenv('BOT_USER_ID'))
 
-
 client = discord.Client()
+
+import logging
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 # set prefix for bot commands
 bot = commands.Bot(command_prefix='%')
@@ -147,6 +153,7 @@ async def tresults(ctx, member1: discord.Member, result1, member2: discord.Membe
         embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
         await ctx.send(embed=embed)
         return
+    
     embed = discord.Embed(colour=discord.Colour(0xFF0000))
     embed.add_field(name="TEST", value='{} {} {} {} with {}!'.format(member1.name, result1, member2.name, result2, points), inline=True)
     await ctx.send(embed=embed)
