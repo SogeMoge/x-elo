@@ -154,14 +154,13 @@ async def tresults(ctx, member1: discord.Member, result1, member2: discord.Membe
         embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
         await ctx.send(embed=embed)
         return
-    
-    embed = discord.Embed(colour=discord.Colour(0xFF0000))
-    embed.add_field(name="TEST", value='{} {} {} {} with {}!'.format(member1.name, result1, member2.name, result2, points), inline=True)
-    await ctx.send(embed=embed)
     if result1 not in 'win':
         return
     if result2 not in 'loss':
         return
+    embed = discord.Embed(colour=discord.Colour(0xFF0000))
+    embed.add_field(name="TEST", value='{} {} {} {} with {}!'.format(member1.name, result1, member2.name, result2, points), inline=True)
+    await ctx.send(embed=embed)
     
     # pt = points
     # K = 32
