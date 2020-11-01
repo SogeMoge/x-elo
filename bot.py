@@ -149,7 +149,7 @@ async def on_raw_reaction_add(payload):
 @bot.command(name='tgame', help=' - sumbit tournament result "@winner win @looser loss points"')
 @commands.has_role('league admin')
 async def tresults(ctx, member1: discord.Member, result1, member2: discord.Member, result2, points):
-    if ctx.channel.name != 'тест-лиги':
+    if ctx.channel.name != 'запись-результатов':
         embed = discord.Embed(colour=discord.Colour(0xFF0000))
         embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
         await ctx.send(embed=embed)
