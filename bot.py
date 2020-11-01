@@ -145,6 +145,7 @@ async def on_raw_reaction_add(payload):
 #     await ctx.send(embed=embed)
 
 # command for entering tournament paring results between league members
+
 @bot.command(name='tgame', help=' - sumbit tournament result "@opponent1 win @opponent2 loss points"')
 @commands.has_role('league admin')
 async def tresults(ctx, member1: discord.Member, result1, member2: discord.Member, result2, points):
@@ -157,6 +158,11 @@ async def tresults(ctx, member1: discord.Member, result1, member2: discord.Membe
     embed = discord.Embed(colour=discord.Colour(0xFF0000))
     embed.add_field(name="TEST", value='{} {} {} {} with {}!'.format(member1.name, result1, member2.name, result2, points), inline=True)
     await ctx.send(embed=embed)
+    if result1 not in 'win':
+        return
+    if result2 not in 'loss':
+        return
+    
     # pt = points
     # K = 32
 
