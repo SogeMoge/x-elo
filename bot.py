@@ -146,7 +146,7 @@ async def on_raw_reaction_add(payload):
 
 # command for entering tournament paring results between league members
 
-@bot.command(name='tgame', help=' - sumbit tournament result "@opponent1 win @opponent2 loss points"')
+@bot.command(name='tgame', help=' - sumbit tournament result "@winner win @looser loss points"')
 @commands.has_role('league admin')
 async def tresults(ctx, member1: discord.Member, result1, member2: discord.Member, result2, points):
     if ctx.channel.name != 'тест-лиги':
@@ -154,22 +154,21 @@ async def tresults(ctx, member1: discord.Member, result1, member2: discord.Membe
         embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
         await ctx.send(embed=embed)
         return
-    if result1 not in 'win':
+    elif result1 not in 'win':
         embed = discord.Embed(colour=discord.Colour(0xFF0000))
-        embed.add_field(name="ERROR", value='First opponent have to be a winner, followe by "win"', inline=True)
+        embed.add_field(name="ERROR", value='First opponent have to be a winner, followed by "win"', inline=True)
         await ctx.send(embed=embed)
         return
-    if result2 not in 'loss':
+    elif result2 not in 'loss':
         embed = discord.Embed(colour=discord.Colour(0xFF0000))
-        embed.add_field(name="ERROR", value='First opponent have to be a looser, followe by "loss"', inline=True)
+        embed.add_field(name="ERROR", value='First opponent have to be a looser, followed by "loss"', inline=True)
         await ctx.send(embed=embed)
         return
     embed = discord.Embed(colour=discord.Colour(0xFF0000))
     embed.add_field(name="TEST", value='{} {} {} {} with {}!'.format(member1.name, result1, member2.name, result2, points), inline=True)
     await ctx.send(embed=embed)
-    
-    # pt = points
-    # K = 32
+    pt = points
+    K = 32
 
 
 # command for entering game results, calculaton and updating rating
@@ -194,6 +193,14 @@ async def results(ctx, member: discord.Member, result, points):
         return
     pt = points
     K = 32        # K-factor
+    # extract current rating for message winner
+    for a_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member1.id}'):
+        Rw = w_row[0] # winner rating
+    await ctx.send(Rw)
+    # extract current rating for mentioned looser
+    for op_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member2.id}'):
+        Rl = ol_row[0] # looser rating
+    await ctx.send(Rl)
 
     #check if players have >= 10 games with each other
     cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
