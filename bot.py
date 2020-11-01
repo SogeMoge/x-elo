@@ -87,7 +87,7 @@ async def game_check(ctx, member: discord.Member):
     cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE id != 0 AND ((member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id}));')
     gcount = cursor.fetchone()[0]
     embed = discord.Embed(colour=discord.Colour(0x6790a7))
-    embed.add_field(name="Games played", value='{} and {} have played {} games in total.'.format(ctx.author.name, member.name, gcount), inline=True)
+    embed.add_field(name="Games played", value='{} and {} have played {} games in total, not including tournament games.'.format(ctx.author.name, member.name, gcount), inline=True)
     await ctx.send(embed=embed)
 
 # Command shows League Leaderboard from top to bottom
