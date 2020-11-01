@@ -140,7 +140,7 @@ async def on_raw_reaction_add(payload):
 
 # command for entering tournament paring results between league members
 @bot.command(name='tgame', help=' - sumbit tournament result "@opponent1 win @opponent2 loss points"')
-@commands.has_role('leauge admin')
+@commands.has_role('league admin')
 async def tresults(ctx, member1: discord.Member, result1, member2: discord.Member, result2, points):
     if ctx.channel.name != 'тест-лиги':
         embed = discord.Embed(colour=discord.Colour(0xFF0000))
