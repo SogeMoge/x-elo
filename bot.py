@@ -169,6 +169,14 @@ async def tresults(ctx, member1: discord.Member, result1, member2: discord.Membe
     await ctx.send(embed=embed)
     pt = points
     K = 32
+    # extract current rating for message winner
+    for w_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member1.id}'):
+        Rw = w_row[0] # winner rating
+    await ctx.send(Rw)
+    # extract current rating for mentioned looser
+    for l_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member2.id}'):
+        Rl = l_row[0] # looser rating
+    await ctx.send(Rl)
 
 
 # command for entering game results, calculaton and updating rating
@@ -193,14 +201,6 @@ async def results(ctx, member: discord.Member, result, points):
         return
     pt = points
     K = 32        # K-factor
-    # extract current rating for message winner
-    for a_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member1.id}'):
-        Rw = w_row[0] # winner rating
-    await ctx.send(Rw)
-    # extract current rating for mentioned looser
-    for op_row in cursor.execute(f'SELECT rating FROM rating WHERE member_id={member2.id}'):
-        Rl = ol_row[0] # looser rating
-    await ctx.send(Rl)
 
     #check if players have >= 10 games with each other
     cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
