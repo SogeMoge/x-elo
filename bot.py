@@ -126,17 +126,32 @@ async def on_raw_reaction_add(payload):
             await top.add_reaction(update_reaction)
 
 # Command shows top10 from League Leaderboard
-@bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
-@commands.has_role('league admin')
-async def top10(ctx):
-    embed = discord.Embed(title="Top 10 League players", colour=discord.Colour(0xFFD700))
-    n = 0
-    for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC LIMIT 10'):
-        n = n + 1
-        embed.add_field(name="Position", value=n, inline=True)
-        embed.add_field(name="Name", value=row[1], inline=True)
-        embed.add_field(name="Rating", value=row[0], inline=True)
-    await ctx.send(embed=embed)
+# @bot.command(name='top10', help=' - show top 10 league players', aliases=['10'])
+# @commands.has_role('league admin')
+# async def top10(ctx):
+#     embed = discord.Embed(title="Top 10 League players", colour=discord.Colour(0xFFD700))
+#     n = 0
+#     for row in cursor.execute(f'SELECT rating,member_name FROM rating ORDER BY rating DESC LIMIT 10'):
+#         n = n + 1
+#         embed.add_field(name="Position", value=n, inline=True)
+#         embed.add_field(name="Name", value=row[1], inline=True)
+#         embed.add_field(name="Rating", value=row[0], inline=True)
+#     await ctx.send(embed=embed)
+
+# command for entering tournament paring results between league members
+@bot.command(name='tgame', help=' - sumbit tournament result "@opponent1 win @opponent2 loss points"')
+@commands.has_role('leauge admin')
+async def tresults(ctx, member1: discord.Member, result1, member2: discord.Member, result2, points):
+    if ctx.channel.name != 'тест-лиги':
+        embed = discord.Embed(colour=discord.Colour(0xFF0000))
+        embed.add_field(name="ERROR", value='Wrong channel!', inline=True)
+        await ctx.send(embed=embed)
+        return
+    embed = discord.Embed(colour=discord.Colour(0xFF0000))
+    embed.add_field(name="TEST", value='{} {} {} {} with {}!'.format(member1.name, result1, member2.name, result2, points), inline=True)
+    # pt = points
+    # K = 32
+
 
 # command for entering game results, calculaton and updating rating
 @bot.command(name='game', help=' - submit opponent\'s result "@opponent win/loss points"')
