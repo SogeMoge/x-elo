@@ -84,7 +84,7 @@ async def status(ctx):
 @commands.has_role('league')
 async def game_check(ctx, member: discord.Member):
     #check if players have >= 10 games with each other
-    cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
+    cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE id != 0 AND ((member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id}));')
     gcount = cursor.fetchone()[0]
     embed = discord.Embed(colour=discord.Colour(0x6790a7))
     embed.add_field(name="Games played", value='{} and {} have played {} games in total.'.format(ctx.author.name, member.name, gcount), inline=True)
