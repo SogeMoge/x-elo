@@ -242,7 +242,7 @@ async def results(ctx, member: discord.Member, result, points):
     K = 32        # K-factor
 
     #check if players have >= 10 games with each other
-    cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE (member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id});')
+    cursor.execute(f'SELECT COUNT(DISTINCT id) FROM games WHERE id != 0 AND ((member_id = {ctx.author.id} AND opponent_id = {member.id}) OR (member_id = {member.id} AND opponent_id = {ctx.author.id}));')
     gcount = cursor.fetchone()[0]
 
     if gcount >= 10:
