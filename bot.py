@@ -56,7 +56,7 @@ async def giverole(ctx, member: discord.Member):
             # Inserts row with user data into db as well as default game stat values
             cursor.execute(f"INSERT INTO rating (member_id, member_name) VALUES ({member.id}, '{member.name}')")
             conn.commit()
-
+            await ctx.send(f"League account created")
             # add league role
             await member.add_roles(role)
             # pretty outpun in chat
