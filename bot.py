@@ -75,8 +75,8 @@ async def status(ctx):
     for row in cursor.execute(f'SELECT rating,games,wins,losses FROM rating WHERE member_id={ctx.author.id}'):
         embed = discord.Embed(title="League profile", colour=discord.Colour(0xFFD700))
         embed.add_field(name="Position", value=pos, inline=False)
-        embed.add_field(name="Rating", value=row[0], inline=True)
-        embed.add_field(name="Games", value=row[1], inline=False)
+        embed.add_field(name="Rating", value=row[0], inline=False)
+        embed.add_field(name="Games", value=row[1], inline=True)
         embed.add_field(name="Wins", value=row[2], inline=True)
         embed.add_field(name="Losses", value=row[3], inline=True)
         embed.set_footer(text=ctx.author.name, icon_url = ctx.author.avatar_url)
