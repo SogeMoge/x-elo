@@ -70,7 +70,7 @@ async def giverole(ctx, member: discord.Member):
 @bot.command(name='status', help=' - check your personal rating', aliases=['stat'])
 @commands.has_role('league')
 async def status(ctx):
-    cursor.execute(f'SELECT COUNT(member_name) FROM rating WHERE rating > (SELECT rating FROM rating WHERE member_id={ctx.author.id})')
+    cursor.execute(f'SELECT COUNT(member_name) FROM rating WHERE rating >= (SELECT rating FROM rating WHERE member_id={ctx.author.id})')
     pos = cursor.fetchone()[0]
     for row in cursor.execute(f'SELECT rating,games,wins,losses FROM rating WHERE member_id={ctx.author.id}'):
         embed = discord.Embed(title="League profile", colour=discord.Colour(0xFFD700))
