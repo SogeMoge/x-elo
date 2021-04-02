@@ -9,6 +9,11 @@ from dotenv import load_dotenv
 from discord.ext import commands
 from discord.utils import get
 
+intents = discord.Intents.default()
+intents.members = True
+
+bot = commands.Bot(command_prefix='%', intents=intents)
+
 # load token from .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -16,6 +21,8 @@ INFO_CH_ID = int(os.getenv('INFO_CHANNEL_ID'))
 BOT_ID = int(os.getenv('BOT_USER_ID'))
 
 client = discord.Client()
+
+
 
 import logging
 logger = logging.getLogger('discord')
@@ -25,7 +32,8 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # set prefix for bot commands
-bot = commands.Bot(command_prefix='%')
+#bot = commands.Bot(command_prefix='%')
+
 
 # open connection to database
 import sqlite3
